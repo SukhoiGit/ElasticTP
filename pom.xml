@@ -26,6 +26,7 @@
         <module>core</module>
         <!-- 动态线程池基础模块包，包含Spring扫描动态线程池、是否启用以及Banner打印等 -->
         <module>spring-base</module>
+        <module>starter</module>
     </modules>
 
     <properties>
