@@ -1,6 +1,5 @@
 package com.artemis.elastictp.core.executor;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 
