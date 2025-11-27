@@ -30,6 +30,11 @@ public class BootstrapConfigProperties {
     private NacosConfig nacos;
 
     /**
+     * Apollo 配置文件
+     */
+    private ApolloConfig apollo;
+
+    /**
      * Nacos 远程配置文件格式类型
      */
     private ConfigFileTypeEnum configFileType;
@@ -45,6 +50,12 @@ public class BootstrapConfigProperties {
         private String dataId;
 
         private String group;
+    }
+
+    @Data
+    public static class ApolloConfig {
+
+        private String namespace;
     }
 
 }

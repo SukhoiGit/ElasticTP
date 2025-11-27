@@ -13,6 +13,7 @@
     <packaging>pom</packaging>
     <modules>
         <module>nacos-cloud-spring-boot-starter</module>
+        <module>apollo-spring-boot-starter</module>
     </modules>
 
     <properties>
