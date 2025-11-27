@@ -9,6 +9,7 @@ import com.artemis.elastictp.core.executor.ThreadPoolExecutorHolder;
 import com.artemis.elastictp.core.executor.ThreadPoolExecutorProperties;
 import com.artemis.elastictp.core.executor.support.BlockingQueueTypeEnum;
 import com.artemis.elastictp.core.executor.support.RejectedPolicyTypeEnum;
+import com.artemis.elastictp.core.executor.support.ResizableCapacityLinkedBlockingQueue;
 import com.artemis.elastictp.core.toolkit.ThreadPoolExecutorBuilder;
 import com.artemis.elastictp.spring.base.configuration.BootstrapConfigProperties;
 import com.artemis.elastictp.spring.base.parser.ConfigParserHandler;
@@ -25,22 +26,19 @@ import org.springframework.boot.context.properties.source.MapConfigurationProper
 
 import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.Executor;
-import java.util.concurrent.RejectedExecutionHandler;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 
 /**
  * Nacos Cloud 版本刷新处理器
  */
-@Slf4j
+@Slf4j(topic = "ElasticTpConfigRefresher")
 @RequiredArgsConstructor
 public class NacosCloudRefresherHandler implements ApplicationRunner {
 
     private final BootstrapConfigProperties properties;
     private ConfigService configService;
 
-    public static final String CHANGE_THREAD_POOL_TEXT = "[{}] \uD83E\uDDF5 Dynamic thread pool parameter changed:"
+    public static final String CHANGE_THREAD_POOL_TEXT = "[{}] Dynamic thread pool parameter changed:"
             + "\n    corePoolSize: {}"
             + "\n    maximumPoolSize: {}"
             + "\n    capacity: {}"
@@ -118,8 +116,8 @@ public class NacosCloudRefresherHandler implements ApplicationRunner {
         log.info("Dynamic thread pool refresher, add nacos cloud listener success. data-id: {}, group: {}", nacosConfig.getDataId(), nacosConfig.getGroup());
     }
 
-    private boolean hasThreadPoolConfigChanged(ThreadPoolExecutorProperties remateProperties) {
-        String threadPoolId = remateProperties.getThreadPoolId();
+    private boolean hasThreadPoolConfigChanged(ThreadPoolExecutorProperties remoteProperties) {
+        String threadPoolId = remoteProperties.getThreadPoolId();
         ThreadPoolExecutorHolder holder = ElasticTpRegistry.getHolder(threadPoolId);
         if (holder == null) {
             log.warn("No thread pool found for thread pool id: {}", threadPoolId);
@@ -128,7 +126,7 @@ public class NacosCloudRefresherHandler implements ApplicationRunner {
         ThreadPoolExecutor executor = holder.getExecutor();
         ThreadPoolExecutorProperties originalProperties = holder.getExecutorProperties();
 
-        return hasDifference(originalProperties, remateProperties, executor);
+        return hasDifference(originalProperties, remoteProperties, executor);
     }
 
     private void updateThreadPoolFromRemoteConfig(ThreadPoolExecutorProperties remoteProperties) {
@@ -172,17 +170,37 @@ public class NacosCloudRefresherHandler implements ApplicationRunner {
                 !Objects.equals(remoteProperties.getKeepAliveTime(), originalProperties.getKeepAliveTime())) {
             executor.setKeepAliveTime(remoteProperties.getKeepAliveTime(), TimeUnit.SECONDS);
         }
+
+        // 更新队列容量（仅对 ResizableCapacityLinkedBlockingQueue 生效）
+        if (isQueueCapacityChanged(originalProperties, remoteProperties, executor)) {
+            BlockingQueue<Runnable> queue = executor.getQueue();
+            ResizableCapacityLinkedBlockingQueue<?> resizableQueue = (ResizableCapacityLinkedBlockingQueue<?>) queue;
+            resizableQueue.setCapacity(remoteProperties.getQueueCapacity());
+        }
     }
 
-    private boolean hasDifference(ThreadPoolExecutorProperties originalProperties, ThreadPoolExecutorProperties remateProperties, ThreadPoolExecutor executor) {
-        return isChanged(originalProperties.getCorePoolSize(), remateProperties.getCorePoolSize())
-                || isChanged(originalProperties.getMaximumPoolSize(), remateProperties.getMaximumPoolSize())
-                || isChanged(originalProperties.getAllowCoreThreadTimeOut(), remateProperties.getAllowCoreThreadTimeOut())
-                || isChanged(originalProperties.getKeepAliveTime(), remateProperties.getKeepAliveTime())
-                || isChanged(originalProperties.getRejectedHandler(), remateProperties.getRejectedHandler());
+    private boolean hasDifference(ThreadPoolExecutorProperties originalProperties, ThreadPoolExecutorProperties remoteProperties, ThreadPoolExecutor executor) {
+        return isChanged(originalProperties.getCorePoolSize(), remoteProperties.getCorePoolSize())
+                || isChanged(originalProperties.getMaximumPoolSize(), remoteProperties.getMaximumPoolSize())
+                || isChanged(originalProperties.getAllowCoreThreadTimeOut(), remoteProperties.getAllowCoreThreadTimeOut())
+                || isChanged(originalProperties.getKeepAliveTime(), remoteProperties.getKeepAliveTime())
+                || isChanged(originalProperties.getRejectedHandler(), remoteProperties.getRejectedHandler())
+                || isQueueCapacityChanged(originalProperties, remoteProperties, executor);
     }
 
     private <T> boolean isChanged(T before, T after) {
         return after != null && !Objects.equals(before, after);
+    }
+
+    private boolean isQueueCapacityChanged(ThreadPoolExecutorProperties originalProperties,
+                                           ThreadPoolExecutorProperties remoteProperties,
+                                           ThreadPoolExecutor executor) {
+        Integer remoteCapacity = remoteProperties.getQueueCapacity();
+        Integer originalCapacity = originalProperties.getQueueCapacity();
+        BlockingQueue<?> queue = executor.getQueue();
+
+        return remoteCapacity != null
+                && !Objects.equals(remoteCapacity, originalCapacity)
+                && Objects.equals(BlockingQueueTypeEnum.RESIZABLE_CAPACITY_LINKED_BLOCKING_QUEUE.getName(), queue.getClass().getSimpleName());
     }
 }
