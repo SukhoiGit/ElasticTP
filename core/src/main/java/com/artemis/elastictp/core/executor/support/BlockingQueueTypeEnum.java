@@ -100,6 +100,21 @@ public enum BlockingQueueTypeEnum {
         <T> BlockingQueue<T> of() {
             return new PriorityBlockingQueue<>();
         }
+    },
+
+    /**
+     * {@link ResizableCapacityLinkedBlockingQueue}
+     */
+    RESIZABLE_CAPACITY_LINKED_BLOCKING_QUEUE("ResizableCapacityLinkedBlockingQueue") {
+        @Override
+        <T> BlockingQueue<T> of(Integer capacity) {
+            return new ResizableCapacityLinkedBlockingQueue<>(capacity);
+        }
+
+        @Override
+        <T> BlockingQueue<T> of() {
+            return new ResizableCapacityLinkedBlockingQueue<>();
+        }
     };
 
     @Getter
