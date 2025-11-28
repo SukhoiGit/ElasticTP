@@ -26,6 +26,9 @@ import java.util.concurrent.RejectedExecutionHandler;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+import static com.artemis.elastictp.core.constant.Constants.CHANGE_DELIMITER;
+import static com.artemis.elastictp.core.constant.Constants.CHANGE_THREAD_POOL_TEXT;
+
 /**
  * 基于模板方法模式抽象动态线程池刷新逻辑
  */
@@ -60,15 +63,6 @@ public abstract class AbstractDynamicThreadPoolRefresher implements ApplicationR
         registerListener();
         afterRegister();
     }
-
-    public static final String CHANGE_THREAD_POOL_TEXT = "[{}] Dynamic thread pool parameter changed:"
-            + "\n    corePoolSize: {}"
-            + "\n    maximumPoolSize: {}"
-            + "\n    capacity: {}"
-            + "\n    keepAliveTime: {}"
-            + "\n    rejectedType: {}"
-            + "\n    allowCoreThreadTimeOut: {}";
-    public static final String CHANGE_DELIMITER = "%s => %s";
 
     @SneakyThrows
     public void refreshThreadPoolProperties(String configInfo) {
