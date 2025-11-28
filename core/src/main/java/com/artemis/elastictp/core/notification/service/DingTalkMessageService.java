@@ -16,13 +16,14 @@ import static com.artemis.elastictp.core.constant.Constants.DING_CONFIG_CHANGE_M
  * 钉钉消息通知服务
  */
 @Slf4j
-public class DingTalkMessageService {
+public class DingTalkMessageService implements NotifierService{
 
     /**
      * 发送线程池配置变更通知到钉钉机器人
      *
      * @param configChangeDTO 线程池配置变更数据传输对象，包含变更详情和接收人信息
      */
+    @Override
     public void sendChangeMessage(ThreadPoolConfigChangeDTO configChangeDTO) {
         Map<String, Object> markdown = getStringObjectHashMap(configChangeDTO);
         Map<String, Object> at = new HashMap<>();
