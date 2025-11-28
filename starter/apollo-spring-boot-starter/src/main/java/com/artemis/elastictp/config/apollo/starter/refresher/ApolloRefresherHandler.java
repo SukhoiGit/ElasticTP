@@ -1,9 +1,8 @@
 package com.artemis.elastictp.config.apollo.starter.refresher;
 
 import com.artemis.elastictp.config.common.starter.refresher.AbstractDynamicThreadPoolRefresher;
-import com.artemis.elastictp.core.notification.service.DingTalkMessageService;
 import com.artemis.elastictp.core.notification.service.NotifierDispatcher;
-import com.artemis.elastictp.spring.base.configuration.BootstrapConfigProperties;
+import com.artemis.elastictp.core.config.BootstrapConfigProperties;
 import com.ctrip.framework.apollo.Config;
 import com.ctrip.framework.apollo.ConfigChangeListener;
 import com.ctrip.framework.apollo.ConfigFile;
@@ -14,10 +13,6 @@ import lombok.extern.slf4j.Slf4j;
 
 /**
  * Apollo 配置中心刷新处理器
- * <p>
- * 作者：马丁
- * 加项目群：早加入就是优势！500人内部项目群，分享的知识总有你需要的 <a href="https://t.zsxq.com/cw7b9" />
- * 开发时间：2025-04-26
  */
 @Slf4j(topic = "OneThreadConfigRefresher")
 public class ApolloRefresherHandler extends AbstractDynamicThreadPoolRefresher {

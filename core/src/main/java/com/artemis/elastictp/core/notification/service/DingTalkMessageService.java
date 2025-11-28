@@ -2,6 +2,7 @@ package com.artemis.elastictp.core.notification.service;
 
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.http.HttpUtil;
+import com.artemis.elastictp.core.config.BootstrapConfigProperties;
 import com.artemis.elastictp.core.notification.dto.ThreadPoolConfigChangeDTO;
 import com.alibaba.fastjson2.JSON;
 import lombok.Data;
@@ -33,7 +34,7 @@ public class DingTalkMessageService implements NotifierService{
         dingTaskMarkdownRequest.put("markdown", markdown);
         dingTaskMarkdownRequest.put("at", at);
         try {
-            String serverUrl = configChangeDTO.getNotifyPlatforms().getUrl();
+            String serverUrl = BootstrapConfigProperties.getInstance().getNotifyPlatforms().getUrl();
             String responseBody = HttpUtil.post(serverUrl, JSON.toJSONString(dingTaskMarkdownRequest));
             DingTalkMessageService.DingRobotResponse response = JSON.parseObject(responseBody, DingTalkMessageService.DingRobotResponse.class);
             if (response.getErrcode() != 0) {

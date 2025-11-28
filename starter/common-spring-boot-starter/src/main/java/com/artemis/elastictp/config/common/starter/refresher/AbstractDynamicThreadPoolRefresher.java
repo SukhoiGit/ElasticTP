@@ -1,6 +1,5 @@
 package com.artemis.elastictp.config.common.starter.refresher;
 
-import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.date.DateUtil;
 import com.artemis.elastictp.core.executor.ElasticTpRegistry;
@@ -10,10 +9,9 @@ import com.artemis.elastictp.core.executor.support.BlockingQueueTypeEnum;
 import com.artemis.elastictp.core.executor.support.RejectedPolicyTypeEnum;
 import com.artemis.elastictp.core.executor.support.ResizableCapacityLinkedBlockingQueue;
 import com.artemis.elastictp.core.notification.dto.ThreadPoolConfigChangeDTO;
-import com.artemis.elastictp.core.notification.service.DingTalkMessageService;
 import com.artemis.elastictp.core.notification.service.NotifierDispatcher;
-import com.artemis.elastictp.spring.base.configuration.BootstrapConfigProperties;
-import com.artemis.elastictp.spring.base.parser.ConfigParserHandler;
+import com.artemis.elastictp.core.config.BootstrapConfigProperties;
+import com.artemis.elastictp.core.parser.ConfigParserHandler;
 import com.artemis.elastictp.spring.base.support.ApplicationContextHolder;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -104,7 +102,7 @@ public abstract class AbstractDynamicThreadPoolRefresher implements ApplicationR
             holder.setExecutorProperties(remoteProperties);
 
             // 发送线程池配置变更消息通知
-            sendThreadPoolConfigChangeMessage(properties, originalProperties, remoteProperties);
+            sendThreadPoolConfigChangeMessage(originalProperties, remoteProperties);
 
             // 打印线程池配置变更日志
             log.info(CHANGE_THREAD_POOL_TEXT,
@@ -209,8 +207,7 @@ public abstract class AbstractDynamicThreadPoolRefresher implements ApplicationR
     }
 
     @SneakyThrows
-    private void sendThreadPoolConfigChangeMessage(BootstrapConfigProperties properties,
-                                                   ThreadPoolExecutorProperties originalProperties,
+    private void sendThreadPoolConfigChangeMessage(ThreadPoolExecutorProperties originalProperties,
                                                    ThreadPoolExecutorProperties remoteProperties) {
         Environment environment = ApplicationContextHolder.getBean(Environment.class);
         String active = environment.getProperty("spring.profiles.active", "dev");
@@ -232,7 +229,6 @@ public abstract class AbstractDynamicThreadPoolRefresher implements ApplicationR
                 .workQueue(originalProperties.getWorkQueue())
                 .changes(changes)
                 .updateTime(DateUtil.now())
-                .notifyPlatforms(BeanUtil.toBean(properties.getNotifyPlatforms(), ThreadPoolConfigChangeDTO.NotifyPlatformsConfig.class))
                 .build();
         notifierDispatcher.sendChangeMessage(configChangeDTO);
     }
