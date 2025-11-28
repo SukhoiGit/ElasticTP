@@ -1,15 +1,19 @@
 package com.artemis.elastictp.config.common.starter.refresher;
 
+import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.date.DateUtil;
 import com.artemis.elastictp.core.executor.ElasticTpRegistry;
 import com.artemis.elastictp.core.executor.ThreadPoolExecutorHolder;
 import com.artemis.elastictp.core.executor.ThreadPoolExecutorProperties;
 import com.artemis.elastictp.core.executor.support.BlockingQueueTypeEnum;
 import com.artemis.elastictp.core.executor.support.RejectedPolicyTypeEnum;
 import com.artemis.elastictp.core.executor.support.ResizableCapacityLinkedBlockingQueue;
+import com.artemis.elastictp.core.notification.dto.ThreadPoolConfigChangeDTO;
 import com.artemis.elastictp.core.notification.service.DingTalkMessageService;
 import com.artemis.elastictp.spring.base.configuration.BootstrapConfigProperties;
 import com.artemis.elastictp.spring.base.parser.ConfigParserHandler;
+import com.artemis.elastictp.spring.base.support.ApplicationContextHolder;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -19,7 +23,10 @@ import org.springframework.boot.context.properties.bind.Bindable;
 import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySource;
 import org.springframework.boot.context.properties.source.MapConfigurationPropertySource;
+import org.springframework.core.env.Environment;
 
+import java.net.InetAddress;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.BlockingQueue;
@@ -94,6 +101,11 @@ public abstract class AbstractDynamicThreadPoolRefresher implements ApplicationR
             ThreadPoolExecutorHolder holder = ElasticTpRegistry.getHolder(threadPoolId);
             ThreadPoolExecutorProperties originalProperties = holder.getExecutorProperties();
             holder.setExecutorProperties(remoteProperties);
+
+            // 发送线程池配置变更消息通知
+            sendThreadPoolConfigChangeMessage(properties, originalProperties, remoteProperties);
+
+            // 打印线程池配置变更日志
             log.info(CHANGE_THREAD_POOL_TEXT,
                     threadPoolId,
                     String.format(CHANGE_DELIMITER, originalProperties.getCorePoolSize(), remoteProperties.getCorePoolSize()),
@@ -168,7 +180,9 @@ public abstract class AbstractDynamicThreadPoolRefresher implements ApplicationR
         }
     }
 
-    private boolean hasDifference(ThreadPoolExecutorProperties originalProperties, ThreadPoolExecutorProperties remoteProperties, ThreadPoolExecutor executor) {
+    private boolean hasDifference(ThreadPoolExecutorProperties originalProperties,
+                                  ThreadPoolExecutorProperties remoteProperties,
+                                  ThreadPoolExecutor executor) {
         return isChanged(originalProperties.getCorePoolSize(), remoteProperties.getCorePoolSize())
                 || isChanged(originalProperties.getMaximumPoolSize(), remoteProperties.getMaximumPoolSize())
                 || isChanged(originalProperties.getAllowCoreThreadTimeOut(), remoteProperties.getAllowCoreThreadTimeOut())
@@ -191,5 +205,34 @@ public abstract class AbstractDynamicThreadPoolRefresher implements ApplicationR
         return remoteCapacity != null
                 && !Objects.equals(remoteCapacity, originalCapacity)
                 && Objects.equals(BlockingQueueTypeEnum.RESIZABLE_CAPACITY_LINKED_BLOCKING_QUEUE.getName(), queue.getClass().getSimpleName());
+    }
+
+    @SneakyThrows
+    private void sendThreadPoolConfigChangeMessage(BootstrapConfigProperties properties,
+                                                   ThreadPoolExecutorProperties originalProperties,
+                                                   ThreadPoolExecutorProperties remoteProperties) {
+        Environment environment = ApplicationContextHolder.getBean(Environment.class);
+        String active = environment.getProperty("spring.profiles.active", "dev");
+        String applicationName = environment.getProperty("spring.application.name");
+
+        Map<String, ThreadPoolConfigChangeDTO.ChangePair<?>> changes = new HashMap<>();
+        changes.put("corePoolSize", new ThreadPoolConfigChangeDTO.ChangePair<>(originalProperties.getCorePoolSize(), remoteProperties.getCorePoolSize()));
+        changes.put("maximumPoolSize", new ThreadPoolConfigChangeDTO.ChangePair<>(originalProperties.getMaximumPoolSize(), remoteProperties.getMaximumPoolSize()));
+        changes.put("queueCapacity", new ThreadPoolConfigChangeDTO.ChangePair<>(originalProperties.getQueueCapacity(), remoteProperties.getQueueCapacity()));
+        changes.put("rejectedHandler", new ThreadPoolConfigChangeDTO.ChangePair<>(originalProperties.getRejectedHandler(), remoteProperties.getRejectedHandler()));
+        changes.put("keepAliveTime", new ThreadPoolConfigChangeDTO.ChangePair<>(originalProperties.getKeepAliveTime(), remoteProperties.getKeepAliveTime()));
+
+        ThreadPoolConfigChangeDTO configChangeDTO = ThreadPoolConfigChangeDTO.builder()
+                .active(active)
+                .identify(InetAddress.getLocalHost().getHostAddress())
+                .applicationName(applicationName)
+                .threadPoolId(originalProperties.getThreadPoolId())
+                .receives(remoteProperties.getNotify().getReceives())
+                .workQueue(originalProperties.getWorkQueue())
+                .changes(changes)
+                .updateTime(DateUtil.now())
+                .notifiers(BeanUtil.toBean(properties.getNotifiers(), ThreadPoolConfigChangeDTO.NotifierConfig.class))
+                .build();
+        messageService.sendChangeMessage(configChangeDTO);
     }
 }

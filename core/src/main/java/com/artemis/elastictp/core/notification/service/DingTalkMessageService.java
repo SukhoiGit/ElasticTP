@@ -32,7 +32,7 @@ public class DingTalkMessageService {
         dingTaskMarkdownRequest.put("markdown", markdown);
         dingTaskMarkdownRequest.put("at", at);
         try {
-            String serverUrl = "https://oapi.dingtalk.com/robot/send?access_token=c7d78d4001fc8ff0543ed7133eb924de7db8a19d9f2389ef8b85b47de70feec7";
+            String serverUrl = configChangeDTO.getNotifiers().getUrl();
             String responseBody = HttpUtil.post(serverUrl, JSON.toJSONString(dingTaskMarkdownRequest));
             DingTalkMessageService.DingRobotResponse response = JSON.parseObject(responseBody, DingTalkMessageService.DingRobotResponse.class);
             if (response.getErrcode() != 0) {
