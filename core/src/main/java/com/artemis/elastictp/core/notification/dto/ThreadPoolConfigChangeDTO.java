@@ -61,11 +61,11 @@ public class ThreadPoolConfigChangeDTO {
     /**
      * 通知配置
      */
-    private NotifierConfig notifiers;
+    private NotifyPlatformsConfig notifyPlatforms;
 
     @Data
     @AllArgsConstructor
-    public static class NotifierConfig {
+    public static class NotifyPlatformsConfig {
 
         /**
          * 完整 WebHook 地址
