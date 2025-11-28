@@ -39,6 +39,7 @@
         <hutool-all.version>5.8.25</hutool-all.version>
         <apollo-client.version>2.1.0</apollo-client.version>
         <spotless-maven-plugin.version>2.22.1</spotless-maven-plugin.version>
+        <fastjson2.version>2.0.53</fastjson2.version>
     </properties>
 
     <dependencyManagement>
@@ -77,6 +78,12 @@
                 <groupId>com.ctrip.framework.apollo</groupId>
                 <artifactId>apollo-client</artifactId>
                 <version>${apollo-client.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.alibaba.fastjson2</groupId>
+                <artifactId>fastjson2</artifactId>
+                <version>${fastjson2.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
