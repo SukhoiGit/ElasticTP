@@ -1,6 +1,7 @@
 package com.artemis.elastictp.core.notification.service;
 
 import com.artemis.elastictp.core.config.BootstrapConfigProperties;
+import com.artemis.elastictp.core.notification.dto.ThreadPoolAlarmNotifyDTO;
 import com.artemis.elastictp.core.notification.dto.ThreadPoolConfigChangeDTO;
 
 import java.util.HashMap;
@@ -29,6 +30,16 @@ public class NotifierDispatcher implements NotifierService {
                 .map(each -> NOTIFIER_SERVICE_MAP.get(each));
         if (notifierService.isPresent()) {
             notifierService.get().sendChangeMessage(configChange);
+        }
+    }
+
+    @Override
+    public void sendAlarmMessage(ThreadPoolAlarmNotifyDTO alarm) {
+        Optional<NotifierService> notifierService = Optional.ofNullable(BootstrapConfigProperties.getInstance().getNotifyPlatforms())
+                .map(BootstrapConfigProperties.NotifyPlatformsConfig::getPlatform)
+                .map(each -> NOTIFIER_SERVICE_MAP.get(each));
+        if (notifierService.isPresent()) {
+            notifierService.get().sendAlarmMessage(alarm);
         }
     }
 }
