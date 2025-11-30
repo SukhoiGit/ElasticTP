@@ -104,7 +104,7 @@ public class Constants {
             
              ---
             
-            **播报时间：%s**
+            **告警时间：%s**
             """;
 }
 
