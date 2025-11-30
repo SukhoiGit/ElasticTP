@@ -71,6 +71,7 @@ public class DingTalkMessageService implements NotifierService {
                 alarm.getRejectedHandlerName(),
                 alarm.getRejectCount(),
                 alarm.getReceives(),
+                alarm.getInterval(),
                 alarm.getCurrentTime()
         );
 

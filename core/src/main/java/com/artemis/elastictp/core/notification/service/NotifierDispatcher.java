@@ -39,7 +39,17 @@ public class NotifierDispatcher implements NotifierService {
                 .map(BootstrapConfigProperties.NotifyPlatformsConfig::getPlatform)
                 .map(each -> NOTIFIER_SERVICE_MAP.get(each));
         if (notifierService.isPresent()) {
-            notifierService.get().sendAlarmMessage(alarm);
+            // 频率检查
+            boolean allowSend = AlarmRateLimiter.allowAlarm(
+                    alarm.getThreadPoolId(),
+                    alarm.getAlarmType(),
+                    alarm.getInterval()
+            );
+
+            // 满足频率发送告警
+            if (allowSend) {
+                notifierService.get().sendAlarmMessage(alarm);
+            }
         }
     }
 }
