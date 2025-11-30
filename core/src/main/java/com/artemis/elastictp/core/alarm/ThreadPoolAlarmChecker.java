@@ -91,7 +91,7 @@ public class ThreadPoolAlarmChecker {
         ThreadPoolExecutor executor = holder.getExecutor();
         ThreadPoolExecutorProperties properties = holder.getExecutorProperties();
 
-        int activeCount = executor.getActiveCount(); // API 有锁，已避免重复调用
+        int activeCount = executor.getActiveCount(); // API 有锁，避免高频率调用
         int maximumPoolSize = executor.getMaximumPoolSize();
 
         if (maximumPoolSize == 0) {
@@ -123,12 +123,12 @@ public class ThreadPoolAlarmChecker {
                 .identify(InetAddress.getLocalHost().getHostAddress())
                 .alarmType(alarmType)
                 .threadPoolId(holder.getThreadPoolId())
-                .activePoolSize(executor.getActiveCount())
                 .corePoolSize(executor.getCorePoolSize())
                 .maximumPoolSize(executor.getMaximumPoolSize())
-                .currentPoolSize(executor.getPoolSize())
-                .completedTaskCount(executor.getCompletedTaskCount())
-                .largestPoolSize(executor.getLargestPoolSize())
+                .activePoolSize(executor.getActiveCount())  // API 有锁，避免高频率调用
+                .currentPoolSize(executor.getPoolSize())  // API 有锁，避免高频率调用
+                .completedTaskCount(executor.getCompletedTaskCount())  // API 有锁，避免高频率调用
+                .largestPoolSize(executor.getLargestPoolSize())  // API 有锁，避免高频率调用
                 .workQueueName(queue.getClass().getSimpleName())
                 .workQueueCapacity(queue.remainingCapacity())
                 .workQueueSize(queue.size())
