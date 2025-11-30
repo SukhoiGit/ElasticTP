@@ -39,6 +39,11 @@ public class BootstrapConfigProperties {
     private NotifyPlatformsConfig notifyPlatforms;
 
     /**
+     * 监控配置
+     */
+    private MonitorConfig monitorConfig = new MonitorConfig();
+
+    /**
      * 线程池配置集合
      */
     private List<ThreadPoolExecutorProperties> executors;
@@ -55,6 +60,25 @@ public class BootstrapConfigProperties {
          * 完整 WebHook 地址
          */
         private String url;
+    }
+
+    @Data
+    public static class MonitorConfig {
+
+        /**
+         * 默认开启监控配置
+         */
+        private Boolean enable = Boolean.TRUE;
+
+        /**
+         * 监控类型
+         */
+        private String collectType = "micrometer";
+
+        /**
+         * 采集间隔，默认 10 秒
+         */
+        private Long collectInterval = 10L;
     }
 
     @Data

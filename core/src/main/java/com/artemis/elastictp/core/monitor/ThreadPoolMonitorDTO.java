@@ -65,6 +65,11 @@ public class ThreadPoolMonitorDTO {
     private Integer workQueueSize;
 
     /**
+     * 队列剩余容量
+     */
+    private Integer workQueueRemainingCapacity;
+
+    /**
      * 拒绝策略
      */
     private String rejectedHandlerName;
