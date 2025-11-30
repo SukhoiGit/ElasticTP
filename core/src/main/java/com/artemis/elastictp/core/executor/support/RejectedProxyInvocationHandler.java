@@ -25,7 +25,6 @@ import java.util.concurrent.atomic.AtomicLong;
 public class RejectedProxyInvocationHandler implements InvocationHandler {
 
     private final Object target;
-    private final String threadPoolId;
     private final AtomicLong rejectCount;
 
     private static final String REJECT_METHOD = "rejectedExecution";
@@ -43,7 +42,6 @@ public class RejectedProxyInvocationHandler implements InvocationHandler {
             return target.getClass().getSimpleName();
         }
 
-        // TODO 触发拒绝策略异常告警
         try {
             return method.invoke(target, args);
         } catch (InvocationTargetException ex) {

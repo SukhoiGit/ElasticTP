@@ -15,6 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.net.InetAddress;
 import java.util.Collection;
+import java.util.Map;
 import java.util.concurrent.*;
 
 /**
@@ -32,6 +33,8 @@ public class ThreadPoolAlarmChecker {
                     .namePrefix("scheduler_thread-pool_alarm_checker")
                     .build()
     );
+
+    private final Map<String, Long> lastRejectCountMap = new ConcurrentHashMap<>();
 
     /**
      * 启动定时检查任务
@@ -58,6 +61,7 @@ public class ThreadPoolAlarmChecker {
         for (ThreadPoolExecutorHolder holder : holders) {
             checkQueueUsage(holder);
             checkActiveRate(holder);
+            checkRejectCount(holder);
         }
     }
 
@@ -106,6 +110,29 @@ public class ThreadPoolAlarmChecker {
         }
     }
 
+    /**
+     * 检查拒绝策略执行次数
+     */
+    private void checkRejectCount(ThreadPoolExecutorHolder holder) {
+        ThreadPoolExecutor executor = holder.getExecutor();
+        String threadPoolId = holder.getThreadPoolId();
+
+        // 只处理自定义线程池类型
+        if (!(executor instanceof ElasticTpExecutor)) {
+            return;
+        }
+
+        ElasticTpExecutor oneThreadExecutor = (ElasticTpExecutor) executor;
+        long currentRejectCount = oneThreadExecutor.getRejectCount().get();
+        long lastRejectCount = lastRejectCountMap.getOrDefault(threadPoolId, 0L);
+
+        // 首次初始化或拒绝次数增加时触发
+        if (currentRejectCount > lastRejectCount) {
+            sendAlarmMessage("Reject", holder);
+            // 更新最后记录值
+            lastRejectCountMap.put(threadPoolId, currentRejectCount);
+        }
+    }
     @SneakyThrows
     private void sendAlarmMessage(String alarmType, ThreadPoolExecutorHolder holder) {
         ThreadPoolExecutor executor = holder.getExecutor();
