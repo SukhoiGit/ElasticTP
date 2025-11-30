@@ -59,9 +59,11 @@ public class ThreadPoolAlarmChecker {
     private void checkAlarm() {
         Collection<ThreadPoolExecutorHolder> holders = ElasticTpRegistry.getAllHolders();
         for (ThreadPoolExecutorHolder holder : holders) {
-            checkQueueUsage(holder);
-            checkActiveRate(holder);
-            checkRejectCount(holder);
+            if (holder.getExecutorProperties().getAlarm().getEnable()) {
+                checkQueueUsage(holder);
+                checkActiveRate(holder);
+                checkRejectCount(holder);
+            }
         }
     }
 
