@@ -1,5 +1,6 @@
 package com.artemis.elastictp.core.toolkit;
 
+import cn.hutool.core.lang.Assert;
 import com.artemis.elastictp.core.executor.ElasticTpExecutor;
 import com.artemis.elastictp.core.executor.support.BlockingQueueTypeEnum;
 import lombok.Getter;
@@ -21,27 +22,27 @@ public class ThreadPoolExecutorBuilder {
     /**
      * 核心线程数
      */
-    private Integer corePoolSize;
+    private Integer corePoolSize = Runtime.getRuntime().availableProcessors();
 
     /**
      * 最大线程数
      */
-    private Integer maximumPoolSize;
+    private Integer maximumPoolSize = corePoolSize >> 1;
 
     /**
      * 阻塞队列类型
      */
-    private BlockingQueueTypeEnum workQueueType;
+    private BlockingQueueTypeEnum workQueueType = BlockingQueueTypeEnum.LINKED_BLOCKING_QUEUE;
 
     /**
      * 队列容量
      */
-    private Integer workQueueCapacity;
+    private Integer workQueueCapacity = 4096;
 
     /**
      * 拒绝策略
      */
-    private RejectedExecutionHandler rejectedHandler;
+    private RejectedExecutionHandler rejectedHandler = new ThreadPoolExecutor.AbortPolicy();
 
     /**
      * 线程工厂
@@ -51,17 +52,17 @@ public class ThreadPoolExecutorBuilder {
     /**
      * 线程空闲存活时间（单位：秒）
      */
-    private Long keepAliveTime;
+    private Long keepAliveTime = 30000L;
 
     /**
      * 是否允许核心线程超时
      */
-    private boolean allowCoreThreadTimeOut;
+    private boolean allowCoreThreadTimeOut = false;
 
     /**
      * 动态线程池标识
      */
-    private boolean dynamicPool;
+    private boolean dynamicPool = false;
 
     /**
      * 最大等待时间
@@ -144,7 +145,7 @@ public class ThreadPoolExecutorBuilder {
      * 出于实用主义，仅暴露常用的 namePrefix 和 daemon 参数
      * 若你对线程优先级、异常处理器等有更细颗粒度需求，可选择扩展重载构造链
      *
-     * @param namePrefix 线程名前缀（e.g. "elasticTp-"），最终线程名为：elasticTp-1、elasticTp-2...
+     * @param namePrefix 线程名前缀（e.g. "onethread-"），最终线程名为：onethread-1、onethread-2...
      * @param daemon     是否为守护线程（true 表示不会阻止 JVM 退出）
      */
     public ThreadPoolExecutorBuilder threadFactory(String namePrefix, Boolean daemon) {
@@ -220,6 +221,8 @@ public class ThreadPoolExecutorBuilder {
         RejectedExecutionHandler rejectedHandler = Optional.ofNullable(this.rejectedHandler)
                 .orElseGet(() -> new ThreadPoolExecutor.AbortPolicy());
 
+        Assert.notNull(threadFactory, "The thread factory cannot be null.");
+
         ThreadPoolExecutor threadPoolExecutor;
         if (dynamicPool) {
             threadPoolExecutor = new ElasticTpExecutor(
@@ -249,3 +252,4 @@ public class ThreadPoolExecutorBuilder {
         return threadPoolExecutor;
     }
 }
+
