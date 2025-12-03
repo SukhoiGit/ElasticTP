@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.artemis</groupId>
-    <artifactId>ElasticTP</artifactId>
+    <artifactId>ElasticTP-all</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>pom</packaging>
     <description>
@@ -23,6 +23,7 @@
     <modules>
         <!-- 动态线程池核心模块包，实现动态线程池相关基础类定义 -->
         <module>core</module>
+        <module>spring-base</module>
     </modules>
 
     <properties>

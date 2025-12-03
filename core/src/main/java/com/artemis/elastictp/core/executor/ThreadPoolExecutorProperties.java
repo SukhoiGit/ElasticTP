@@ -17,6 +17,11 @@ import lombok.experimental.Accessors;
 public class ThreadPoolExecutorProperties {
 
     /**
+     * 线程池唯一标识
+     */
+    private String threadPoolId;
+
+    /**
      * 核心线程数
      */
     private Integer corePoolSize;
