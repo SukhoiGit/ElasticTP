@@ -24,6 +24,7 @@
         <!-- 动态线程池核心模块包，实现动态线程池相关基础类定义 -->
         <module>core</module>
         <module>spring-base</module>
+        <module>starter</module>
     </modules>
 
     <properties>
