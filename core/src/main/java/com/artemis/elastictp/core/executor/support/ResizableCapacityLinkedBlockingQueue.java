@@ -240,7 +240,12 @@ public class ResizableCapacityLinkedBlockingQueue<E> extends AbstractQueue<E>
      * @param capacity the new capacity for the queue
      */
     public void setCapacity(int capacity) {
+        final int oldCapacity = this.capacity;
         this.capacity = capacity;
+        final int size = count.get();
+        if (capacity > size && size >= oldCapacity) {
+            signalNotFull();
+        }
     }
 
     // this doc comment is a modified copy of the inherited doc comment,
