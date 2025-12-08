@@ -13,7 +13,7 @@ import java.util.List;
 @Data
 @ConfigurationProperties(prefix = BootstrapConfigProperties.PREFIX)
 public class BootstrapConfigProperties {
-    public static final String PREFIX = "onethread";
+    public static final String PREFIX = "elastictp";
 
     /**
      * 是否开启动态线程池开关
@@ -24,6 +24,11 @@ public class BootstrapConfigProperties {
      * Nacos 配置文件
      */
     private NacosConfig nacos;
+
+    /**
+     * Apollo 配置文件
+     */
+    private ApolloConfig apollo;
 
     /**
      * Nacos 远程配置文件格式类型
@@ -41,6 +46,12 @@ public class BootstrapConfigProperties {
         private String dataId;
 
         private String group;
+    }
+
+    @Data
+    public static class ApolloConfig {
+
+        private String namespace;
     }
 
 }
