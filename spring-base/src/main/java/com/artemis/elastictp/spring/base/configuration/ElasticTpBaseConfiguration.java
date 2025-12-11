@@ -1,5 +1,6 @@
 package com.artemis.elastictp.spring.base.configuration;
 
+import com.artemis.elastictp.core.notification.service.DingTalkMessageService;
 import com.artemis.elastictp.spring.base.support.ApplicationContextHolder;
 import com.artemis.elastictp.spring.base.support.ElasticTpBeanPostProcessor;
 import org.springframework.beans.factory.annotation.Configurable;
@@ -23,6 +24,11 @@ public class ElasticTpBaseConfiguration {
     @DependsOn("applicationContextHolder")
     public ElasticTpBeanPostProcessor oneThreadBeanPostProcessor(BootstrapConfigProperties properties) {
         return new ElasticTpBeanPostProcessor(properties);
+    }
+
+    @Bean
+    public DingTalkMessageService dingTalkMessageService() {
+        return new DingTalkMessageService();
     }
 
 }

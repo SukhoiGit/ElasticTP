@@ -1,6 +1,7 @@
 package com.artemis.elastictp.config.apollo.starter.refresher;
 
 import com.artemis.elastictp.config.common.starter.refresher.AbstractDynamicThreadPoolRefresher;
+import com.artemis.elastictp.core.notification.service.DingTalkMessageService;
 import com.artemis.elastictp.spring.base.configuration.BootstrapConfigProperties;
 import com.ctrip.framework.apollo.Config;
 import com.ctrip.framework.apollo.ConfigChangeListener;
@@ -16,8 +17,8 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j(topic = "OneThreadConfigRefresher")
 public class ApolloRefresherHandler extends AbstractDynamicThreadPoolRefresher {
 
-    public ApolloRefresherHandler(BootstrapConfigProperties properties) {
-        super(properties);
+    public ApolloRefresherHandler(BootstrapConfigProperties properties, DingTalkMessageService messageService) {
+        super(properties, messageService);
     }
 
     @SneakyThrows

@@ -6,6 +6,7 @@ import com.alibaba.nacos.api.config.listener.Listener;
 import com.alibaba.nacos.api.exception.NacosException;
 import com.artemis.elastictp.config.common.starter.refresher.AbstractDynamicThreadPoolRefresher;
 import com.artemis.elastictp.core.executor.support.BlockingQueueTypeEnum;
+import com.artemis.elastictp.core.notification.service.DingTalkMessageService;
 import com.artemis.elastictp.core.toolkit.ThreadPoolExecutorBuilder;
 import com.artemis.elastictp.spring.base.configuration.BootstrapConfigProperties;
 import com.artemis.elastictp.spring.base.support.ApplicationContextHolder;
@@ -20,8 +21,8 @@ public class NacosCloudRefresherHandler extends AbstractDynamicThreadPoolRefresh
 
     private ConfigService configService;
 
-    public NacosCloudRefresherHandler(BootstrapConfigProperties properties) {
-        super(properties);
+    public NacosCloudRefresherHandler(BootstrapConfigProperties properties, DingTalkMessageService messageService) {
+        super(properties, messageService);
         configService = ApplicationContextHolder.getBean(NacosConfigProperties.class).configServiceInstance();
     }
 
