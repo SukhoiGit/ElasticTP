@@ -231,7 +231,7 @@ public abstract class AbstractDynamicThreadPoolRefresher implements ApplicationR
                 .workQueue(originalProperties.getWorkQueue())
                 .changes(changes)
                 .updateTime(DateUtil.now())
-                .notifiers(BeanUtil.toBean(properties.getNotifiers(), ThreadPoolConfigChangeDTO.NotifierConfig.class))
+                .notifyPlatforms(BeanUtil.toBean(properties.getNotifyPlatforms(), ThreadPoolConfigChangeDTO.NotifyPlatformsConfig.class))
                 .build();
         messageService.sendChangeMessage(configChangeDTO);
     }

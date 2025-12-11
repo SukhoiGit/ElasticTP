@@ -38,7 +38,7 @@ public class BootstrapConfigProperties {
     /**
      * 通知配置
      */
-    private NotifierConfig notifiers;
+    private NotifyPlatformsConfig notifyPlatforms;
 
     /**
      * 线程池配置集合
@@ -46,7 +46,7 @@ public class BootstrapConfigProperties {
     private List<ThreadPoolExecutorProperties> executors;
 
     @Data
-    public static class NotifierConfig {
+    public static class NotifyPlatformsConfig {
 
         /**
          * 完整 WebHook 地址
