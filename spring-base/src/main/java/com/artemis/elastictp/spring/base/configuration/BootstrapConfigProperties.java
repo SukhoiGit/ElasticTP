@@ -36,9 +36,23 @@ public class BootstrapConfigProperties {
     private ConfigFileTypeEnum configFileType;
 
     /**
+     * 通知配置
+     */
+    private NotifierConfig notifiers;
+
+    /**
      * 线程池配置集合
      */
     private List<ThreadPoolExecutorProperties> executors;
+
+    @Data
+    public static class NotifierConfig {
+
+        /**
+         * 完整 WebHook 地址
+         */
+        private String url;
+    }
 
     @Data
     public static class NacosConfig {

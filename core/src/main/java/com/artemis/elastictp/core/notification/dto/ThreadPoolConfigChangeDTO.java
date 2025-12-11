@@ -58,6 +58,21 @@ public class ThreadPoolConfigChangeDTO {
      */
     private String updateTime;
 
+    /**
+     * 通知配置
+     */
+    private NotifierConfig notifiers;
+
+    @Data
+    @AllArgsConstructor
+    public static class NotifierConfig {
+
+        /**
+         * 完整 WebHook 地址
+         */
+        private String url;
+    }
+
     @Data
     @AllArgsConstructor
     public static class ChangePair<T> {
