@@ -1,19 +1,17 @@
-package com.artemis.elastictp.spring.base.configuration;
+package com.artemis.elastictp.core.config;
 
 import com.artemis.elastictp.core.executor.ThreadPoolExecutorProperties;
-import com.artemis.elastictp.spring.base.parser.ConfigFileTypeEnum;
+import com.artemis.elastictp.core.parser.ConfigFileTypeEnum;
 import lombok.Data;
-import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import java.util.List;
 
 /**
- * elasticTp 配置中心参数
+ * oneThread 配置中心参数
  */
 @Data
-@ConfigurationProperties(prefix = BootstrapConfigProperties.PREFIX)
 public class BootstrapConfigProperties {
-    public static final String PREFIX = "elastictp";
+    public static final String PREFIX = "onethread";
 
     /**
      * 是否开启动态线程池开关
@@ -71,6 +69,16 @@ public class BootstrapConfigProperties {
     public static class ApolloConfig {
 
         private String namespace;
+    }
+
+    private static BootstrapConfigProperties INSTANCE = new BootstrapConfigProperties();
+
+    public static BootstrapConfigProperties getInstance() {
+        return INSTANCE;
+    }
+
+    public static void setInstance(BootstrapConfigProperties properties) {
+        INSTANCE = properties;
     }
 
 }

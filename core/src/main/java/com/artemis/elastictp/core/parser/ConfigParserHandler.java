@@ -1,4 +1,4 @@
-package com.artemis.elastictp.spring.base.parser;
+package com.artemis.elastictp.core.parser;
 
 import java.io.IOException;
 import java.util.ArrayList;

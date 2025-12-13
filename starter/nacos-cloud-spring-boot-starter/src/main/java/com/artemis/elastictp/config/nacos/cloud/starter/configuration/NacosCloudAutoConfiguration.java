@@ -1,9 +1,8 @@
 package com.artemis.elastictp.config.nacos.cloud.starter.configuration;
 
 import com.artemis.elastictp.config.nacos.cloud.starter.refresher.NacosCloudRefresherHandler;
-import com.artemis.elastictp.core.notification.service.DingTalkMessageService;
 import com.artemis.elastictp.core.notification.service.NotifierDispatcher;
-import com.artemis.elastictp.spring.base.configuration.BootstrapConfigProperties;
+import com.artemis.elastictp.core.config.BootstrapConfigProperties;
 import com.artemis.elastictp.spring.base.enable.MarkerConfiguration;
 import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;

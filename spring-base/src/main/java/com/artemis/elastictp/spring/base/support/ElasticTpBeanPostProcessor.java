@@ -8,7 +8,7 @@ import com.artemis.elastictp.core.executor.ThreadPoolExecutorProperties;
 import com.artemis.elastictp.core.executor.support.BlockingQueueTypeEnum;
 import com.artemis.elastictp.core.executor.support.RejectedPolicyTypeEnum;
 import com.artemis.elastictp.spring.base.DynamicThreadPool;
-import com.artemis.elastictp.spring.base.configuration.BootstrapConfigProperties;
+import com.artemis.elastictp.core.config.BootstrapConfigProperties;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;

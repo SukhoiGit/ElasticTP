@@ -1,4 +1,4 @@
-package com.artemis.elastictp.spring.base.parser;
+package com.artemis.elastictp.core.parser;
 
 import cn.hutool.core.collection.CollectionUtil;
 

@@ -1,9 +1,8 @@
 package com.artemis.elastictp.config.apollo.starter.refresher;
 
 import com.artemis.elastictp.config.common.starter.refresher.AbstractDynamicThreadPoolRefresher;
-import com.artemis.elastictp.core.notification.service.DingTalkMessageService;
 import com.artemis.elastictp.core.notification.service.NotifierDispatcher;
-import com.artemis.elastictp.spring.base.configuration.BootstrapConfigProperties;
+import com.artemis.elastictp.core.config.BootstrapConfigProperties;
 import com.ctrip.framework.apollo.Config;
 import com.ctrip.framework.apollo.ConfigChangeListener;
 import com.ctrip.framework.apollo.ConfigFile;
