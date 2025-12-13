@@ -2,6 +2,7 @@ package com.artemis.elastictp.config.nacos.cloud.starter.configuration;
 
 import com.artemis.elastictp.config.nacos.cloud.starter.refresher.NacosCloudRefresherHandler;
 import com.artemis.elastictp.core.notification.service.DingTalkMessageService;
+import com.artemis.elastictp.core.notification.service.NotifierDispatcher;
 import com.artemis.elastictp.spring.base.configuration.BootstrapConfigProperties;
 import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.context.annotation.Bean;
@@ -14,7 +15,7 @@ public class NacosCloudAutoConfiguration {
 
     @Bean
     public NacosCloudRefresherHandler nacosCloudRefresherHandler(BootstrapConfigProperties properties,
-                                                                 DingTalkMessageService messageService) {
-        return new NacosCloudRefresherHandler(properties, messageService);
+                                                                 NotifierDispatcher notifierDispatcher) {
+        return new NacosCloudRefresherHandler(properties, notifierDispatcher);
     }
 }

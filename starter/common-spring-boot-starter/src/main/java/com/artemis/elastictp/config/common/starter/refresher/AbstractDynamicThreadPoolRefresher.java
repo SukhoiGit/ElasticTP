@@ -11,6 +11,7 @@ import com.artemis.elastictp.core.executor.support.RejectedPolicyTypeEnum;
 import com.artemis.elastictp.core.executor.support.ResizableCapacityLinkedBlockingQueue;
 import com.artemis.elastictp.core.notification.dto.ThreadPoolConfigChangeDTO;
 import com.artemis.elastictp.core.notification.service.DingTalkMessageService;
+import com.artemis.elastictp.core.notification.service.NotifierDispatcher;
 import com.artemis.elastictp.spring.base.configuration.BootstrapConfigProperties;
 import com.artemis.elastictp.spring.base.parser.ConfigParserHandler;
 import com.artemis.elastictp.spring.base.support.ApplicationContextHolder;
@@ -45,7 +46,7 @@ import static com.artemis.elastictp.core.constant.Constants.CHANGE_THREAD_POOL_T
 public abstract class AbstractDynamicThreadPoolRefresher implements ApplicationRunner {
 
     protected final BootstrapConfigProperties properties;
-    protected final DingTalkMessageService messageService;
+    protected final NotifierDispatcher notifierDispatcher;
 
     /**
      * 注册配置变更监听器，由子类实现具体逻辑
@@ -233,6 +234,6 @@ public abstract class AbstractDynamicThreadPoolRefresher implements ApplicationR
                 .updateTime(DateUtil.now())
                 .notifyPlatforms(BeanUtil.toBean(properties.getNotifyPlatforms(), ThreadPoolConfigChangeDTO.NotifyPlatformsConfig.class))
                 .build();
-        messageService.sendChangeMessage(configChangeDTO);
+        notifierDispatcher.sendChangeMessage(configChangeDTO);
     }
 }

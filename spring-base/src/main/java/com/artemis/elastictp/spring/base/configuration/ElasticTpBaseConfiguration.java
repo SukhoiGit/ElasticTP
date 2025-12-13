@@ -1,6 +1,7 @@
 package com.artemis.elastictp.spring.base.configuration;
 
 import com.artemis.elastictp.core.notification.service.DingTalkMessageService;
+import com.artemis.elastictp.core.notification.service.NotifierDispatcher;
 import com.artemis.elastictp.spring.base.support.ApplicationContextHolder;
 import com.artemis.elastictp.spring.base.support.ElasticTpBeanPostProcessor;
 import org.springframework.beans.factory.annotation.Configurable;
@@ -27,8 +28,8 @@ public class ElasticTpBaseConfiguration {
     }
 
     @Bean
-    public DingTalkMessageService dingTalkMessageService() {
-        return new DingTalkMessageService();
+    public NotifierDispatcher notifierDispatcher() {
+        return new NotifierDispatcher();
     }
 
 }
