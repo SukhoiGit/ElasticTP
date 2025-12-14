@@ -22,7 +22,7 @@ public class ElasticTpRegistry {
      * @param executor      线程池执行器实例
      * @param properties    线程池参数配置
      */
-    public static void put(String threadPoolId, ThreadPoolExecutor executor, ThreadPoolExecutorProperties properties) {
+    public static void putHolder(String threadPoolId, ThreadPoolExecutor executor, ThreadPoolExecutorProperties properties) {
         ThreadPoolExecutorHolder holder = new ThreadPoolExecutorHolder(threadPoolId, executor, properties);
         HOLDER_MAP.put(threadPoolId, holder);
     }

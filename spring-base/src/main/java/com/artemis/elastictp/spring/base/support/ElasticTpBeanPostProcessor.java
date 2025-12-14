@@ -44,7 +44,7 @@ public class ElasticTpBeanPostProcessor implements BeanPostProcessor {
             overrideLocalThreadPoolConfig(properties, elasticTpExecutor);
 
             // 注册到动态线程池注册器，后续监控和报警从注册器获取线程池实例。同时，参数动态变更需要依赖 ThreadPoolExecutorProperties 比对是否有边跟
-            ElasticTpRegistry.put(elasticTpExecutor.getThreadPoolId(), elasticTpExecutor, buildDefaultExecutorProperties(elasticTpExecutor));
+            ElasticTpRegistry.putHolder(elasticTpExecutor.getThreadPoolId(), elasticTpExecutor, buildDefaultExecutorProperties(elasticTpExecutor));
         }
 
         return bean;
