@@ -1,9 +1,12 @@
 package com.artemis.elastictp.core.executor;
 
+import com.artemis.elastictp.core.executor.support.RejectedProxyInvocationHandler;
 import lombok.Getter;
 import lombok.NonNull;
 
+import java.lang.reflect.Proxy;
 import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  *  增强的动态，报警，和受监控线程池 elasticTp
@@ -15,6 +18,12 @@ public class ElasticTpExecutor extends ThreadPoolExecutor {
      */
     @Getter
     private final String threadPoolId;
+
+    /**
+     * 线程池拒绝策略执行次数
+     */
+    @Getter
+    private final AtomicLong rejectCount = new AtomicLong();
 
     /**
      * Creates a new {@code ExtensibleThreadPoolExecutor} with the given initial parameters.
@@ -53,6 +62,15 @@ public class ElasticTpExecutor extends ThreadPoolExecutor {
             @NonNull ThreadFactory threadFactory,
             @NonNull RejectedExecutionHandler handler) {
         super(corePoolSize, maximumPoolSize, keepAliveTime, unit, workQueue);
+
+        // 通过动态代理设置拒绝策略执行次数
+        RejectedExecutionHandler rejectedProxy = (RejectedExecutionHandler) Proxy
+                .newProxyInstance(
+                        handler.getClass().getClassLoader(),
+                        new Class[]{RejectedExecutionHandler.class},
+                        new RejectedProxyInvocationHandler(handler, threadPoolId, rejectCount)
+                );
+        setRejectedExecutionHandler(rejectedProxy);
 
         // 设置动态线程池扩展属性，线程池 ID 标识
         this.threadPoolId = threadPoolId;
