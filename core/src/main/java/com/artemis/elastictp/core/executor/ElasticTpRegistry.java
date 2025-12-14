@@ -1,5 +1,6 @@
 package com.artemis.elastictp.core.executor;
 
+import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
@@ -34,5 +35,14 @@ public class ElasticTpRegistry {
      */
     public static ThreadPoolExecutorHolder getHolder(String threadPoolId) {
         return HOLDER_MAP.get(threadPoolId);
+    }
+
+    /**
+     * 获取所有线程池集合
+     *
+     * @return 线程池集合
+     */
+    public static Collection<ThreadPoolExecutorHolder> getAllHolders() {
+        return HOLDER_MAP.values();
     }
 }

@@ -7,11 +7,11 @@ import lombok.Data;
 import java.util.List;
 
 /**
- * oneThread 配置中心参数
+ * elasticTp 配置中心参数
  */
 @Data
 public class BootstrapConfigProperties {
-    public static final String PREFIX = "onethread";
+    public static final String PREFIX = "elasticTp";
 
     /**
      * 是否开启动态线程池开关

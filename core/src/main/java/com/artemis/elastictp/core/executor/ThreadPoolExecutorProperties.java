@@ -61,6 +61,11 @@ public class ThreadPoolExecutorProperties {
      */
     private NotifyConfig notify;
 
+    /**
+     * 报警配置，默认设置
+     */
+    private AlarmConfig alarm = new AlarmConfig();
+
     @Data
     @NoArgsConstructor
     @AllArgsConstructor
@@ -72,5 +77,24 @@ public class ThreadPoolExecutorProperties {
         private String receives;
     }
 
-}
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class AlarmConfig {
 
+        /**
+         * 默认开启报警配配置
+         */
+        private Boolean enable = Boolean.TRUE;
+
+        /**
+         * 队列阈值
+         */
+        private Integer queueThreshold = 80;
+
+        /**
+         * 活跃线程阈值
+         */
+        private Integer activeThreshold = 80;
+    }
+}
