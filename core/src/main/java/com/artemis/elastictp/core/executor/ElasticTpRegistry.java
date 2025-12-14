@@ -28,11 +28,11 @@ public class ElasticTpRegistry {
 
     /**
      * 根据线程池 ID 获取对应的线程池包装对象
-     * @param threadPoolId  线程池唯一标识
-     * @return      线程池包装对象
+     *
+     * @param threadPoolId 线程池唯一标识
+     * @return 线程池持有者对象
      */
     public static ThreadPoolExecutorHolder getHolder(String threadPoolId) {
-        return Optional.ofNullable(HOLDER_MAP.get(threadPoolId))
-                .orElseThrow(() -> new RuntimeException("No thread pool executor found for id: " + threadPoolId));
+        return HOLDER_MAP.get(threadPoolId);
     }
 }
