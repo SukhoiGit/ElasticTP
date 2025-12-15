@@ -41,26 +41,28 @@ public class ElasticTpBeanPostProcessor implements BeanPostProcessor {
             ElasticTpExecutor elasticTpExecutor = (ElasticTpExecutor) bean;
 
             // 从配置中心读取动态线程池配置并对线程池进行赋值
-            overrideLocalThreadPoolConfig(properties, elasticTpExecutor);
+            ThreadPoolExecutorProperties executorProperties = properties.getExecutors()
+                    .stream()
+                    .filter(each -> Objects.equals(elasticTpExecutor.getThreadPoolId(), each.getThreadPoolId()))
+                    .findFirst()
+                    .orElseThrow(() -> new RuntimeException("The thread pool id does not exist in the configuration."));
+
+            overrideLocalThreadPoolConfig(executorProperties, elasticTpExecutor);
 
             // 注册到动态线程池注册器，后续监控和报警从注册器获取线程池实例。同时，参数动态变更需要依赖 ThreadPoolExecutorProperties 比对是否有边跟
-            ElasticTpRegistry.putHolder(elasticTpExecutor.getThreadPoolId(), elasticTpExecutor, buildDefaultExecutorProperties(elasticTpExecutor));
+            ElasticTpRegistry.putHolder(elasticTpExecutor.getThreadPoolId(), elasticTpExecutor, executorProperties);
         }
 
         return bean;
     }
 
-    private void overrideLocalThreadPoolConfig(BootstrapConfigProperties properties, ElasticTpExecutor elasticTpExecutor) {
-        ThreadPoolExecutorProperties executorProperties = properties.getExecutors()
-                .stream()
-                .filter(each -> Objects.equals(elasticTpExecutor.getThreadPoolId(), each.getThreadPoolId()))
-                .findFirst()
-                .orElseThrow(() -> new RuntimeException("The thread pool id does not exist in the configuration."));
+    private void overrideLocalThreadPoolConfig(ThreadPoolExecutorProperties executorProperties, ElasticTpExecutor elasticTpExecutor) {
 
         Integer remoteCorePoolSize = executorProperties.getCorePoolSize();
         Integer remoteMaximumPoolSize = executorProperties.getMaximumPoolSize();
         Assert.isTrue(remoteCorePoolSize <= remoteMaximumPoolSize, "remoteCorePoolSize must be smaller than remoteMaximumPoolSize.");
 
+        // 如果不清楚为什么有这段逻辑，可以参考 Hippo4j Issue https://github.com/opengoofy/hippo4j/issues/1063
         int originalMaximumPoolSize = elasticTpExecutor.getMaximumPoolSize();
         if (remoteCorePoolSize > originalMaximumPoolSize) {
             elasticTpExecutor.setMaximumPoolSize(remoteMaximumPoolSize);
@@ -102,4 +104,3 @@ public class ElasticTpBeanPostProcessor implements BeanPostProcessor {
         return executorProperties;
     }
 }
-
