@@ -1,5 +1,6 @@
 package com.artemis.elastictp.core.notification.service;
 
+import com.artemis.elastictp.core.notification.dto.ThreadPoolAlarmNotifyDTO;
 import com.artemis.elastictp.core.notification.dto.ThreadPoolConfigChangeDTO;
 
 /**
@@ -13,4 +14,11 @@ public interface NotifierService {
      * @param configChange 配置变更信息
      */
     void sendChangeMessage(ThreadPoolConfigChangeDTO configChange);
+
+    /**
+     * 发送线程池报警通知
+     *
+     * @param alarm 报警信息
+     */
+    void sendAlarmMessage(ThreadPoolAlarmNotifyDTO alarm);
 }

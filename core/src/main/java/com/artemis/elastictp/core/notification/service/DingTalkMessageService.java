@@ -4,20 +4,23 @@ import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.http.HttpUtil;
 import com.alibaba.fastjson2.JSON;
 import com.artemis.elastictp.core.config.BootstrapConfigProperties;
+import com.artemis.elastictp.core.notification.dto.ThreadPoolAlarmNotifyDTO;
 import com.artemis.elastictp.core.notification.dto.ThreadPoolConfigChangeDTO;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import static com.artemis.elastictp.core.constant.Constants.DING_ALARM_NOTIFY_MESSAGE_TEXT;
 import static com.artemis.elastictp.core.constant.Constants.DING_CONFIG_CHANGE_MESSAGE_TEXT;
 
 /**
  * 钉钉消息通知服务
  */
 @Slf4j
-public class DingTalkMessageService implements NotifierService{
+public class DingTalkMessageService implements NotifierService {
 
     /**
      * 发送线程池配置变更通知到钉钉机器人
@@ -26,28 +29,8 @@ public class DingTalkMessageService implements NotifierService{
      */
     @Override
     public void sendChangeMessage(ThreadPoolConfigChangeDTO configChangeDTO) {
-        Map<String, Object> markdown = getStringObjectHashMap(configChangeDTO);
-        Map<String, Object> at = new HashMap<>();
-        at.put("atMobiles", CollectionUtil.newArrayList(configChangeDTO.getReceives().split(",")));
-        Map<String, Object> dingTaskMarkdownRequest = new HashMap<>();
-        dingTaskMarkdownRequest.put("msgtype", "markdown");
-        dingTaskMarkdownRequest.put("markdown", markdown);
-        dingTaskMarkdownRequest.put("at", at);
-        try {
-            String serverUrl = BootstrapConfigProperties.getInstance().getNotifyPlatforms().getUrl();
-            String responseBody = HttpUtil.post(serverUrl, JSON.toJSONString(dingTaskMarkdownRequest));
-            DingTalkMessageService.DingRobotResponse response = JSON.parseObject(responseBody, DingTalkMessageService.DingRobotResponse.class);
-            if (response.getErrcode() != 0) {
-                log.error("Ding failed to send message, reason: {}", response.errmsg);
-            }
-        } catch (Exception ex) {
-            log.error("Ding failed to send message.", ex);
-        }
-    }
-
-    private static Map<String, Object> getStringObjectHashMap(ThreadPoolConfigChangeDTO configChangeDTO) {
         Map<String, ThreadPoolConfigChangeDTO.ChangePair<?>> changes = configChangeDTO.getChanges();
-        String markdownText = String.format(
+        String text = String.format(
                 DING_CONFIG_CHANGE_MESSAGE_TEXT,
                 configChangeDTO.getActive().toUpperCase(),
                 configChangeDTO.getThreadPoolId(),
@@ -62,10 +45,65 @@ public class DingTalkMessageService implements NotifierService{
                 configChangeDTO.getReceives(),
                 configChangeDTO.getUpdateTime()
         );
-        HashMap<String, Object> markdown = new HashMap<>();
-        markdown.put("title", "动态线程池通知");
-        markdown.put("text", markdownText);
-        return markdown;
+
+        List<String> atMobiles = CollectionUtil.newArrayList(configChangeDTO.getReceives().split(","));
+        sendDingTalkMarkdownMessage("动态线程池通知", text, atMobiles);
+    }
+
+    @Override
+    public void sendAlarmMessage(ThreadPoolAlarmNotifyDTO alarm) {
+        String text = String.format(
+                DING_ALARM_NOTIFY_MESSAGE_TEXT,
+                alarm.getActiveProfile().toUpperCase(),
+                alarm.getThreadPoolId(),
+                alarm.getIdentify() + ":" + alarm.getApplicationName(),
+                alarm.getAlarmType(),
+                alarm.getCorePoolSize(),
+                alarm.getMaximumPoolSize(),
+                alarm.getCurrentPoolSize(),
+                alarm.getActivePoolSize(),
+                alarm.getLargestPoolSize(),
+                alarm.getCompletedTaskCount(),
+                alarm.getWorkQueueName(),
+                alarm.getWorkQueueCapacity() + alarm.getWorkQueueSize(),
+                alarm.getWorkQueueSize(),
+                alarm.getWorkQueueCapacity(),
+                alarm.getRejectedHandlerName(),
+                alarm.getRejectCount(),
+                alarm.getReceives(),
+                alarm.getCurrentTime()
+        );
+
+        List<String> atMobiles = CollectionUtil.newArrayList(alarm.getReceives().split(","));
+        sendDingTalkMarkdownMessage("线程池告警通知", text, atMobiles);
+    }
+
+    /**
+     * 通用的钉钉markdown格式发送逻辑
+     */
+    private void sendDingTalkMarkdownMessage(String title, String text, List<String> atMobiles) {
+        Map<String, Object> markdown = new HashMap<>();
+        markdown.put("title", title);
+        markdown.put("text", text);
+
+        Map<String, Object> at = new HashMap<>();
+        at.put("atMobiles", atMobiles);
+
+        Map<String, Object> request = new HashMap<>();
+        request.put("msgtype", "markdown");
+        request.put("markdown", markdown);
+        request.put("at", at);
+
+        try {
+            String serverUrl = BootstrapConfigProperties.getInstance().getNotifyPlatforms().getUrl();
+            String responseBody = HttpUtil.post(serverUrl, JSON.toJSONString(request));
+            DingRobotResponse response = JSON.parseObject(responseBody, DingRobotResponse.class);
+            if (response.getErrcode() != 0) {
+                log.error("Ding failed to send message, reason: {}", response.errmsg);
+            }
+        } catch (Exception ex) {
+            log.error("Ding failed to send message.", ex);
+        }
     }
 
     @Data
