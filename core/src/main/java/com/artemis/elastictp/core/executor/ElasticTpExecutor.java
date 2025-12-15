@@ -64,6 +64,14 @@ public class ElasticTpExecutor extends ThreadPoolExecutor {
         super(corePoolSize, maximumPoolSize, keepAliveTime, unit, workQueue);
 
         // 通过动态代理设置拒绝策略执行次数
+        setRejectedExecutionHandler(handler);
+
+        // 设置动态线程池扩展属性：线程池 ID 标识
+        this.threadPoolId = threadPoolId;
+    }
+
+    @Override
+    public void setRejectedExecutionHandler(RejectedExecutionHandler handler) {
         RejectedExecutionHandler rejectedProxy = (RejectedExecutionHandler) Proxy
                 .newProxyInstance(
                         handler.getClass().getClassLoader(),
@@ -71,8 +79,7 @@ public class ElasticTpExecutor extends ThreadPoolExecutor {
                         new RejectedProxyInvocationHandler(handler, threadPoolId, rejectCount)
                 );
         setRejectedExecutionHandler(rejectedProxy);
-
-        // 设置动态线程池扩展属性，线程池 ID 标识
-        this.threadPoolId = threadPoolId;
+        super.setRejectedExecutionHandler(rejectedProxy);
     }
 }
+

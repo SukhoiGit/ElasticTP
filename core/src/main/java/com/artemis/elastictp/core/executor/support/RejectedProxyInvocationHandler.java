@@ -6,6 +6,7 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.concurrent.RejectedExecutionHandler;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
@@ -27,9 +28,20 @@ public class RejectedProxyInvocationHandler implements InvocationHandler {
     private final String threadPoolId;
     private final AtomicLong rejectCount;
 
+    private static final String REJECT_METHOD = "rejectedExecution";
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-        rejectCount.incrementAndGet();
+        if (REJECT_METHOD.equals(method.getName()) &&
+                args != null &&
+                args.length == 2 &&
+                args[0] instanceof Runnable &&
+                args[1] instanceof ThreadPoolExecutor) {
+            rejectCount.incrementAndGet();
+        }
+
+        if (method.getName().equals("toString") && method.getParameterCount() == 0) {
+            return target.getClass().getSimpleName();
+        }
 
         // TODO 触发拒绝策略异常告警
         try {
