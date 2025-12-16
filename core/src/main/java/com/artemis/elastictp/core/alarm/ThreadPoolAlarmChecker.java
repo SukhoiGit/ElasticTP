@@ -1,11 +1,19 @@
 package com.artemis.elastictp.core.alarm;
 
+import cn.hutool.core.date.DateUtil;
+import com.artemis.elastictp.core.config.ApplicationProperties;
+import com.artemis.elastictp.core.executor.ElasticTpExecutor;
 import com.artemis.elastictp.core.executor.ElasticTpRegistry;
 import com.artemis.elastictp.core.executor.ThreadPoolExecutorHolder;
 import com.artemis.elastictp.core.executor.ThreadPoolExecutorProperties;
+import com.artemis.elastictp.core.notification.dto.ThreadPoolAlarmNotifyDTO;
+import com.artemis.elastictp.core.notification.service.NotifierDispatcher;
 import com.artemis.elastictp.core.toolkit.ThreadFactoryBuilder;
+import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
+import java.net.InetAddress;
 import java.util.Collection;
 import java.util.concurrent.*;
 
@@ -13,7 +21,10 @@ import java.util.concurrent.*;
  * 线程池运行状态报警检查器
  */
 @Slf4j
+@RequiredArgsConstructor
 public class ThreadPoolAlarmChecker {
+
+    private final NotifierDispatcher notifierDispatcher;
 
     private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(
             1,
@@ -53,6 +64,7 @@ public class ThreadPoolAlarmChecker {
     /**
      * 检查队列使用率
      */
+    @SneakyThrows
     private void checkQueueUsage(ThreadPoolExecutorHolder holder) {
         ThreadPoolExecutor executor = holder.getExecutor();
         ThreadPoolExecutorProperties properties = holder.getExecutorProperties();
@@ -69,16 +81,34 @@ public class ThreadPoolAlarmChecker {
         int threshold = properties.getAlarm().getQueueThreshold();
 
         if (usageRate >= threshold) {
-            log.warn("[队列报警] 线程池ID={}，队列使用率={}%，当前队列大小={}，容量={}",
-                    holder.getThreadPoolId(),
-                    usageRate,
-                    queueSize,
-                    capacity
-            );
-            // TODO 报警通知
+            long rejectCount = -1L;
+            if (executor instanceof ElasticTpExecutor) {
+                rejectCount = ((ElasticTpExecutor) executor).getRejectCount().get();
+            }
+
+            ThreadPoolAlarmNotifyDTO alarm = ThreadPoolAlarmNotifyDTO.builder()
+                    .applicationName(ApplicationProperties.getApplicationName())
+                    .activeProfile(ApplicationProperties.getActiveProfile())
+                    .identify(InetAddress.getLocalHost().getHostAddress())
+                    .alarmType("Capacity")
+                    .threadPoolId(holder.getThreadPoolId())
+                    .activePoolSize(executor.getActiveCount())
+                    .corePoolSize(executor.getCorePoolSize())
+                    .maximumPoolSize(executor.getMaximumPoolSize())
+                    .currentPoolSize(executor.getPoolSize())
+                    .completedTaskCount(executor.getCompletedTaskCount())
+                    .largestPoolSize(executor.getLargestPoolSize())
+                    .workQueueName(queue.getClass().getSimpleName())
+                    .workQueueCapacity(queue.remainingCapacity())
+                    .workQueueSize(queue.size())
+                    .rejectedHandlerName(executor.getRejectedExecutionHandler().toString())
+                    .rejectCount(rejectCount)
+                    .receives(properties.getNotify().getReceives())
+                    .currentTime(DateUtil.now())
+                    .build();
+            notifierDispatcher.sendAlarmMessage(alarm);
         }
     }
-
 
     /**
      * 检查线程活跃度（活跃线程数 / 最大线程数）

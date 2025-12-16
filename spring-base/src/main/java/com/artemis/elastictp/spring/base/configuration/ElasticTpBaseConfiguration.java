@@ -5,6 +5,7 @@ import com.artemis.elastictp.core.config.BootstrapConfigProperties;
 import com.artemis.elastictp.core.notification.service.NotifierDispatcher;
 import com.artemis.elastictp.spring.base.support.ApplicationContextHolder;
 import com.artemis.elastictp.spring.base.support.ElasticTpBeanPostProcessor;
+import com.artemis.elastictp.spring.base.support.SpringPropertiesLoader;
 import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.DependsOn;
@@ -31,9 +32,13 @@ public class ElasticTpBaseConfiguration {
         return new NotifierDispatcher();
     }
 
+    @Bean
+    public SpringPropertiesLoader springPropertiesLoader() {
+        return new SpringPropertiesLoader();
+    }
     @Bean(initMethod = "start", destroyMethod = "stop")
-    public ThreadPoolAlarmChecker threadPoolAlarmChecker() {
-        return new ThreadPoolAlarmChecker();
+    public ThreadPoolAlarmChecker threadPoolAlarmChecker(NotifierDispatcher notifierDispatcher) {
+        return new ThreadPoolAlarmChecker(notifierDispatcher);
     }
 
 }
