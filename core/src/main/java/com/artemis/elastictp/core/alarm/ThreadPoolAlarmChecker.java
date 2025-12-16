@@ -64,7 +64,6 @@ public class ThreadPoolAlarmChecker {
     /**
      * 检查队列使用率
      */
-    @SneakyThrows
     private void checkQueueUsage(ThreadPoolExecutorHolder holder) {
         ThreadPoolExecutor executor = holder.getExecutor();
         ThreadPoolExecutorProperties properties = holder.getExecutorProperties();
@@ -81,32 +80,7 @@ public class ThreadPoolAlarmChecker {
         int threshold = properties.getAlarm().getQueueThreshold();
 
         if (usageRate >= threshold) {
-            long rejectCount = -1L;
-            if (executor instanceof ElasticTpExecutor) {
-                rejectCount = ((ElasticTpExecutor) executor).getRejectCount().get();
-            }
-
-            ThreadPoolAlarmNotifyDTO alarm = ThreadPoolAlarmNotifyDTO.builder()
-                    .applicationName(ApplicationProperties.getApplicationName())
-                    .activeProfile(ApplicationProperties.getActiveProfile())
-                    .identify(InetAddress.getLocalHost().getHostAddress())
-                    .alarmType("Capacity")
-                    .threadPoolId(holder.getThreadPoolId())
-                    .activePoolSize(executor.getActiveCount())
-                    .corePoolSize(executor.getCorePoolSize())
-                    .maximumPoolSize(executor.getMaximumPoolSize())
-                    .currentPoolSize(executor.getPoolSize())
-                    .completedTaskCount(executor.getCompletedTaskCount())
-                    .largestPoolSize(executor.getLargestPoolSize())
-                    .workQueueName(queue.getClass().getSimpleName())
-                    .workQueueCapacity(queue.remainingCapacity())
-                    .workQueueSize(queue.size())
-                    .rejectedHandlerName(executor.getRejectedExecutionHandler().toString())
-                    .rejectCount(rejectCount)
-                    .receives(properties.getNotify().getReceives())
-                    .currentTime(DateUtil.now())
-                    .build();
-            notifierDispatcher.sendAlarmMessage(alarm);
+            sendAlarmMessage("Capacity", holder);
         }
     }
 
@@ -128,13 +102,41 @@ public class ThreadPoolAlarmChecker {
         int threshold = properties.getAlarm().getActiveThreshold();
 
         if (activeRate >= threshold) {
-            log.warn("[活跃线程报警] 线程池ID={}，活跃线程数={}，最大线程数={}，活跃率={}%",
-                    holder.getThreadPoolId(),
-                    activeCount,
-                    maximumPoolSize,
-                    activeRate
-            );
-            // TODO 报警通知
+            sendAlarmMessage("Activity", holder);
         }
+    }
+
+    @SneakyThrows
+    private void sendAlarmMessage(String alarmType, ThreadPoolExecutorHolder holder) {
+        ThreadPoolExecutor executor = holder.getExecutor();
+        ThreadPoolExecutorProperties properties = holder.getExecutorProperties();
+        BlockingQueue<?> queue = executor.getQueue();
+
+        long rejectCount = -1L;
+        if (executor instanceof ElasticTpExecutor) {
+            rejectCount = ((ElasticTpExecutor) executor).getRejectCount().get();
+        }
+
+        ThreadPoolAlarmNotifyDTO alarm = ThreadPoolAlarmNotifyDTO.builder()
+                .applicationName(ApplicationProperties.getApplicationName())
+                .activeProfile(ApplicationProperties.getActiveProfile())
+                .identify(InetAddress.getLocalHost().getHostAddress())
+                .alarmType(alarmType)
+                .threadPoolId(holder.getThreadPoolId())
+                .activePoolSize(executor.getActiveCount())
+                .corePoolSize(executor.getCorePoolSize())
+                .maximumPoolSize(executor.getMaximumPoolSize())
+                .currentPoolSize(executor.getPoolSize())
+                .completedTaskCount(executor.getCompletedTaskCount())
+                .largestPoolSize(executor.getLargestPoolSize())
+                .workQueueName(queue.getClass().getSimpleName())
+                .workQueueCapacity(queue.remainingCapacity())
+                .workQueueSize(queue.size())
+                .rejectedHandlerName(executor.getRejectedExecutionHandler().toString())
+                .rejectCount(rejectCount)
+                .receives(properties.getNotify().getReceives())
+                .currentTime(DateUtil.now())
+                .build();
+        notifierDispatcher.sendAlarmMessage(alarm);
     }
 }
