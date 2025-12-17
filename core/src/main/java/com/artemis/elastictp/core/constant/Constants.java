@@ -100,6 +100,8 @@ public class Constants {
             
             <font color='#708090' size=2>OWNER：@%s</font>\s
             
+            <font color='#708090' size=2>提示：%d分钟内此线程池不会重复告警（可配置）</font>\s
+            
              ---
             
             **播报时间：%s**

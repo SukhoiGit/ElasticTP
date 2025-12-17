@@ -96,5 +96,10 @@ public class ThreadPoolExecutorProperties {
          * 活跃线程阈值
          */
         private Integer activeThreshold = 80;
+
+        /**
+         * 报警间隔，单位分钟
+         */
+        private Integer interval = 5;
     }
 }

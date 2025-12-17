@@ -103,5 +103,10 @@ public class ThreadPoolAlarmNotifyDTO {
      * 当前时间
      */
     private String currentTime;
+
+    /**
+     * 报警间隔，单位分钟
+     */
+    private Integer interval;
 }
 
