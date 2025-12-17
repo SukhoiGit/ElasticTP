@@ -76,7 +76,7 @@ public class ElasticTpExecutor extends ThreadPoolExecutor {
                 .newProxyInstance(
                         handler.getClass().getClassLoader(),
                         new Class[]{RejectedExecutionHandler.class},
-                        new RejectedProxyInvocationHandler(handler, threadPoolId, rejectCount)
+                        new RejectedProxyInvocationHandler(handler, rejectCount)
                 );
         setRejectedExecutionHandler(rejectedProxy);
         super.setRejectedExecutionHandler(rejectedProxy);
