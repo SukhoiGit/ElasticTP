@@ -41,7 +41,7 @@ public class ThreadPoolAlarmChecker {
      */
     public void start() {
         // 每10秒检查一次，初始延迟0秒
-        scheduler.scheduleAtFixedRate(this::checkAlarm, 0, 5, TimeUnit.SECONDS);
+        scheduler.scheduleWithFixedDelay(this::checkAlarm, 0, 5, TimeUnit.SECONDS);
     }
 
     /**
