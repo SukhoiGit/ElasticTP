@@ -2,6 +2,7 @@ package com.artemis.elastictp.spring.base.configuration;
 
 import com.artemis.elastictp.core.alarm.ThreadPoolAlarmChecker;
 import com.artemis.elastictp.core.config.BootstrapConfigProperties;
+import com.artemis.elastictp.core.monitor.ThreadPoolMonitor;
 import com.artemis.elastictp.core.notification.service.NotifierDispatcher;
 import com.artemis.elastictp.spring.base.support.ApplicationContextHolder;
 import com.artemis.elastictp.spring.base.support.ElasticTpBeanPostProcessor;
@@ -39,6 +40,11 @@ public class ElasticTpBaseConfiguration {
     @Bean(initMethod = "start", destroyMethod = "stop")
     public ThreadPoolAlarmChecker threadPoolAlarmChecker(NotifierDispatcher notifierDispatcher) {
         return new ThreadPoolAlarmChecker(notifierDispatcher);
+    }
+
+    @Bean(initMethod = "start", destroyMethod = "stop")
+    public ThreadPoolMonitor threadPoolMonitor() {
+        return new ThreadPoolMonitor();
     }
 
 }
