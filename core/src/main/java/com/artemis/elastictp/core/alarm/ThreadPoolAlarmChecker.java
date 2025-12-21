@@ -146,6 +146,8 @@ public class ThreadPoolAlarmChecker {
             rejectCount = ((ElasticTpExecutor) executor).getRejectCount().get();
         }
 
+        int workQueueSize = queue.size(); // API 有锁，避免高频率调用
+        int remainingCapacity = queue.remainingCapacity(); // API 有锁，避免高频率调用
         ThreadPoolAlarmNotifyDTO alarm = ThreadPoolAlarmNotifyDTO.builder()
                 .applicationName(ApplicationProperties.getApplicationName())
                 .activeProfile(ApplicationProperties.getActiveProfile())
@@ -159,8 +161,9 @@ public class ThreadPoolAlarmChecker {
                 .completedTaskCount(executor.getCompletedTaskCount())  // API 有锁，避免高频率调用
                 .largestPoolSize(executor.getLargestPoolSize())  // API 有锁，避免高频率调用
                 .workQueueName(queue.getClass().getSimpleName())
-                .workQueueCapacity(queue.remainingCapacity())
-                .workQueueSize(queue.size())
+                .workQueueSize(workQueueSize)
+                .workQueueRemainingCapacity(remainingCapacity)
+                .workQueueCapacity(workQueueSize + remainingCapacity)
                 .rejectedHandlerName(executor.getRejectedExecutionHandler().toString())
                 .rejectCount(rejectCount)
                 .receives(properties.getNotify().getReceives())
