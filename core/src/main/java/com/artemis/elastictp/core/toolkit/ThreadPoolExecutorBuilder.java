@@ -64,6 +64,11 @@ public class ThreadPoolExecutorBuilder {
     private boolean dynamicPool;
 
     /**
+     * 最大等待时间
+     */
+    private long awaitTerminationMillis = 0L;
+
+    /**
      * 设置构建线程池为动态线程池
      */
     public ThreadPoolExecutorBuilder dynamicPool() {
@@ -191,6 +196,16 @@ public class ThreadPoolExecutorBuilder {
     }
 
     /**
+     * 设置最大等待时间
+     *
+     * @param awaitTerminationMillis 最大等待时间
+     */
+    public ThreadPoolExecutorBuilder awaitTerminationMillis(long awaitTerminationMillis) {
+        this.awaitTerminationMillis = awaitTerminationMillis;
+        return this;
+    }
+
+    /**
      * 创建线程池构建器
      */
     public static ThreadPoolExecutorBuilder builder() {
@@ -215,7 +230,8 @@ public class ThreadPoolExecutorBuilder {
                     TimeUnit.SECONDS,
                     blockingQueue,
                     threadFactory,
-                    rejectedHandler
+                    rejectedHandler,
+                    awaitTerminationMillis
             );
         } else {
             threadPoolExecutor = new ThreadPoolExecutor(
