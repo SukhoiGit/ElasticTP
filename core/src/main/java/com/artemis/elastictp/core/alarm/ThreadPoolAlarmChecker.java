@@ -168,7 +168,7 @@ public class ThreadPoolAlarmChecker {
                 .rejectCount(rejectCount)
                 .receives(properties.getNotify().getReceives())
                 .currentTime(DateUtil.now())
-                .interval(properties.getAlarm().getInterval())
+                .interval(properties.getNotify().getInterval())
                 .build();
         notifierDispatcher.sendAlarmMessage(alarm);
     }

@@ -75,6 +75,11 @@ public class ThreadPoolExecutorProperties {
          * 接收人集合
          */
         private String receives;
+
+        /**
+         * 告警间隔，单位分钟
+         */
+        private Integer interval = 5;
     }
 
     @Data
@@ -97,9 +102,5 @@ public class ThreadPoolExecutorProperties {
          */
         private Integer activeThreshold = 80;
 
-        /**
-         * 报警间隔，单位分钟
-         */
-        private Integer interval = 5;
     }
 }
