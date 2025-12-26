@@ -86,33 +86,37 @@ public abstract class AbstractDynamicThreadPoolRefresher implements ApplicationR
 
         // 刷新动态线程池对象核心参数
         for (ThreadPoolExecutorProperties remoteProperties : refresherProperties.getExecutors()) {
-            // 检查线程池配置是否发生变化（与当前内存中的配置对比）
-            boolean changed = hasThreadPoolConfigChanged(remoteProperties);
-            if (!changed) {
-                continue;
-            }
-
-            // 将远程配置应用到线程池，更新相关参数
-            updateThreadPoolFromRemoteConfig(remoteProperties);
-
-            // 线程池参数变更后进行日志打印
             String threadPoolId = remoteProperties.getThreadPoolId();
-            ThreadPoolExecutorHolder holder = ElasticTpRegistry.getHolder(threadPoolId);
-            ThreadPoolExecutorProperties originalProperties = holder.getExecutorProperties();
-            holder.setExecutorProperties(remoteProperties);
+            // 以线程池 ID 为粒度加锁，避免多个线程同时刷新同一个线程池
+            synchronized (threadPoolId.intern()) {
+                // 检查线程池配置是否发生变化（与当前内存中的配置对比）
+                boolean changed = hasThreadPoolConfigChanged(remoteProperties);
+                if (!changed) {
+                    continue;
+                }
 
-            // 发送线程池配置变更消息通知
-            sendThreadPoolConfigChangeMessage(originalProperties, remoteProperties);
+                // 将远程配置应用到线程池，更新相关参数
+                updateThreadPoolFromRemoteConfig(remoteProperties);
 
-            // 打印线程池配置变更日志
-            log.info(CHANGE_THREAD_POOL_TEXT,
-                    threadPoolId,
-                    String.format(CHANGE_DELIMITER, originalProperties.getCorePoolSize(), remoteProperties.getCorePoolSize()),
-                    String.format(CHANGE_DELIMITER, originalProperties.getMaximumPoolSize(), remoteProperties.getMaximumPoolSize()),
-                    String.format(CHANGE_DELIMITER, originalProperties.getQueueCapacity(), remoteProperties.getQueueCapacity()),
-                    String.format(CHANGE_DELIMITER, originalProperties.getKeepAliveTime(), remoteProperties.getKeepAliveTime()),
-                    String.format(CHANGE_DELIMITER, originalProperties.getRejectedHandler(), remoteProperties.getRejectedHandler()),
-                    String.format(CHANGE_DELIMITER, originalProperties.getAllowCoreThreadTimeOut(), remoteProperties.getAllowCoreThreadTimeOut()));
+                // 线程池参数变更后进行日志打印
+                ThreadPoolExecutorHolder holder = ElasticTpRegistry.getHolder(threadPoolId);
+                ThreadPoolExecutorProperties originalProperties = holder.getExecutorProperties();
+                holder.setExecutorProperties(remoteProperties);
+
+                // 发送线程池配置变更消息通知
+                sendThreadPoolConfigChangeMessage(originalProperties, remoteProperties);
+
+                // 打印线程池配置变更日志
+                log.info(CHANGE_THREAD_POOL_TEXT,
+                        threadPoolId,
+                        String.format(CHANGE_DELIMITER, originalProperties.getCorePoolSize(), remoteProperties.getCorePoolSize()),
+                        String.format(CHANGE_DELIMITER, originalProperties.getMaximumPoolSize(), remoteProperties.getMaximumPoolSize()),
+                        String.format(CHANGE_DELIMITER, originalProperties.getQueueCapacity(), remoteProperties.getQueueCapacity()),
+                        String.format(CHANGE_DELIMITER, originalProperties.getKeepAliveTime(), remoteProperties.getKeepAliveTime()),
+                        String.format(CHANGE_DELIMITER, originalProperties.getRejectedHandler(), remoteProperties.getRejectedHandler()),
+                        String.format(CHANGE_DELIMITER, originalProperties.getAllowCoreThreadTimeOut(), remoteProperties.getAllowCoreThreadTimeOut())
+                );
+            }
         }
     }
 
