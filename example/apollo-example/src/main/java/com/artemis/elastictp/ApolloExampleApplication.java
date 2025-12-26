@@ -1,4 +1,4 @@
-package com.artemis.elastictp.apollo.example;
+package com.artemis.elastictp;
 
 import com.artemis.elastictp.spring.base.enable.EnableElasticTp;
 import org.springframework.boot.SpringApplication;

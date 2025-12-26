@@ -1,4 +1,4 @@
-package com.artemis.elastictp.apollo.example.configuration;
+package com.artemis.elastictp.config.apollo.starter.configuration;
 
 import com.artemis.elastictp.config.apollo.starter.refresher.ApolloRefresherHandler;
 import com.artemis.elastictp.core.notification.service.NotifierDispatcher;

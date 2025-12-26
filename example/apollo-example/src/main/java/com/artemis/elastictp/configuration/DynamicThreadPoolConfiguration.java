@@ -1,4 +1,4 @@
-package com.artemis.elastictp.apollo.example.configuration;
+package com.artemis.elastictp.configuration;
 
 import com.artemis.elastictp.core.executor.support.BlockingQueueTypeEnum;
 import com.artemis.elastictp.core.toolkit.ThreadPoolExecutorBuilder;
@@ -44,4 +44,3 @@ public class DynamicThreadPoolConfiguration {
                 .build();
     }
 }
-
