@@ -9,12 +9,13 @@ import com.artemis.elastictp.spring.base.support.ElasticTpBeanPostProcessor;
 import com.artemis.elastictp.spring.base.support.SpringPropertiesLoader;
 import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
 
 /**
  * 动态线程池基础 Spring 配置类
  */
-@Configurable
+@Configuration
 public class ElasticTpBaseConfiguration {
 
     @Bean
