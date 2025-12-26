@@ -3,11 +3,13 @@ package com.artemis.elastictp.config.common.starter.configuration;
 import com.artemis.elastictp.core.config.BootstrapConfigProperties;
 import com.artemis.elastictp.spring.base.configuration.ElasticTpBaseConfiguration;
 import com.artemis.elastictp.spring.base.enable.MarkerConfiguration;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.bind.Bindable;
 import org.springframework.boot.context.properties.bind.Binder;
+import org.springframework.boot.info.BuildProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.env.Environment;
@@ -27,5 +29,10 @@ public class CommonAutoConfiguration {
                 .get();
         BootstrapConfigProperties.setInstance(bootstrapConfigProperties);
         return bootstrapConfigProperties;
+    }
+
+    @Bean
+    public ElasticTpBannerHandler oneThreadBannerHandler(ObjectProvider<BuildProperties> buildProperties) {
+        return new ElasticTpBannerHandler(buildProperties.getIfAvailable());
     }
 }
