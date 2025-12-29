@@ -1,23 +1,25 @@
 <div align="center">
-
-# 🚀 ElasticTP - 动态线程池管理框架
-
+  <img src=".idea/icon.png" alt="ElasticTP Logo" width="120" height="120">
+  
+  <h1>🚀 ElasticTP</h1>
+  
+  <p><strong>动态线程池管理框架</strong></p>
+  
+  <p>
+    <a href="https://github.com/SukhoiGit/ElasticTP">
+      <img src="https://img.shields.io/badge/ElasticTP-v1.0-blue.svg" alt="ElasticTP Version">
+    </a>
+    <a href="https://www.oracle.com/java/technologies/javase/jdk17-archive-downloads.html">
+      <img src="https://img.shields.io/badge/JDK-17+-green.svg" alt="JDK Version">
+    </a>
+    <a href="https://spring.io/projects/spring-boot">
+      <img src="https://img.shields.io/badge/Spring%20Boot-3.0.7-brightgreen.svg" alt="Spring Boot">
+    </a>
+    <a href="https://github.com/SukhoiGit/ElasticTP/blob/main/LICENSE">
+      <img src="https://img.shields.io/badge/license-Apache%202-4EB1BA.svg" alt="License">
+    </a>
+  </p>
 </div>
-
-<p align="center">
-  <a href="https://github.com/SukhoiGit/ElasticTP">
-    <img src="https://img.shields.io/badge/ElasticTP-v1.0-blue.svg" alt="ElasticTP Version">
-  </a>
-  <a href="https://www.oracle.com/java/technologies/javase/jdk17-archive-downloads.html">
-    <img src="https://img.shields.io/badge/JDK-17+-green.svg" alt="JDK Version">
-  </a>
-  <a href="https://spring.io/projects/spring-boot">
-    <img src="https://img.shields.io/badge/Spring%20Boot-3.0.7-brightgreen.svg" alt="Spring Boot">
-  </a>
-  <a href="https://github.com/SukhoiGit/ElasticTP/blob/main/LICENSE">
-    <img src="https://img.shields.io/badge/license-Apache%202-4EB1BA.svg" alt="License">
-  </a>
-</p>
 
 <p align="center">
   <b>🎉 一个轻量级、高性能的动态线程池管理框架</b><br>
