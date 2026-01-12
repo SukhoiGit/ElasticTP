@@ -1,6 +1,6 @@
-elasticTp:
+elastic-tp:
   nacos:
-    data-id: nacos-cloud-example-Yuqiu-Xiao.yaml
+    data-id: elasticTp-nacos-cloud-example.yaml
     group: DEFAULT_GROUP
   config-file-type: yaml
   web:

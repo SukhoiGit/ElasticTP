@@ -11,7 +11,7 @@ import java.util.List;
  */
 @Data
 public class BootstrapConfigProperties {
-    public static final String PREFIX = "elasticTp";
+    public static final String PREFIX = "elastic-tp";
 
     /**
      * 是否开启动态线程池开关
