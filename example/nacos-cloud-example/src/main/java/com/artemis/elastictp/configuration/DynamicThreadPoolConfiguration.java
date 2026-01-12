@@ -25,7 +25,7 @@ public class DynamicThreadPoolConfiguration {
                 .keepAliveTime(9999L)
                 .awaitTerminationMillis(5000L)
                 .workQueueType(BlockingQueueTypeEnum.SYNCHRONOUS_QUEUE)
-                .threadFactory("onethread-producer_")
+                .threadFactory("elasticTp-producer_")
                 .rejectedHandler(new ThreadPoolExecutor.CallerRunsPolicy())
                 .dynamicPool()
                 .build();

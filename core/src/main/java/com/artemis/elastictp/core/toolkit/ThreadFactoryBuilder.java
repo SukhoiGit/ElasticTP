@@ -17,7 +17,7 @@ public class ThreadFactoryBuilder {
     private ThreadFactory backingThreadFactory;
 
     /**
-     * 线程名前缀，如 "onethread-"，线程名形如：onethread-1
+     * 线程名前缀，如 "elastictp-"，线程名形如：elastictp-1
      */
     private String namePrefix;
 

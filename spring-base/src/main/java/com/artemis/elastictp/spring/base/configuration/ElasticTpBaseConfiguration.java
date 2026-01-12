@@ -25,7 +25,7 @@ public class ElasticTpBaseConfiguration {
 
     @Bean
     @DependsOn("applicationContextHolder")
-    public ElasticTpBeanPostProcessor oneThreadBeanPostProcessor(BootstrapConfigProperties properties) {
+    public ElasticTpBeanPostProcessor elasticTpBeanPostProcessor(BootstrapConfigProperties properties) {
         return new ElasticTpBeanPostProcessor(properties);
     }
 

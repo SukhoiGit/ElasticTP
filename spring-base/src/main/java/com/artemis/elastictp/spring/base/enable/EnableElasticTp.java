@@ -5,7 +5,7 @@ import org.springframework.context.annotation.Import;
 import java.lang.annotation.*;
 
 /**
- * 动态启用 oneThread 动态线程池开关注解
+ * 动态启用 ElasticTp 动态线程池开关注解
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)

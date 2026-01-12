@@ -32,7 +32,7 @@ public class CommonAutoConfiguration {
     }
 
     @Bean
-    public ElasticTpBannerHandler oneThreadBannerHandler(ObjectProvider<BuildProperties> buildProperties) {
+    public ElasticTpBannerHandler elasticTpBannerHandler(ObjectProvider<BuildProperties> buildProperties) {
         return new ElasticTpBannerHandler(buildProperties.getIfAvailable());
     }
 }

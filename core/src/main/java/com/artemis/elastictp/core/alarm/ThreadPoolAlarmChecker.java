@@ -124,8 +124,8 @@ public class ThreadPoolAlarmChecker {
             return;
         }
 
-        ElasticTpExecutor oneThreadExecutor = (ElasticTpExecutor) executor;
-        long currentRejectCount = oneThreadExecutor.getRejectCount().get();
+        ElasticTpExecutor elasticTpExecutor = (ElasticTpExecutor) executor;
+        long currentRejectCount = elasticTpExecutor.getRejectCount().get();
         long lastRejectCount = lastRejectCountMap.getOrDefault(threadPoolId, 0L);
 
         // 首次初始化或拒绝次数增加时触发

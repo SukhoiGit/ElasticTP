@@ -14,7 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 /**
  * Apollo 配置中心刷新处理器
  */
-@Slf4j(topic = "OneThreadConfigRefresher")
+@Slf4j(topic = "ElasticTpConfigRefresher")
 public class ApolloRefresherHandler extends AbstractDynamicThreadPoolRefresher {
 
     public ApolloRefresherHandler(BootstrapConfigProperties properties, NotifierDispatcher notifierDispatcher) {
